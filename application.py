@@ -1,17 +1,20 @@
-def application(environ, start_response):
-    status = '200 OK'
-    headers = [('Content-Type', 'application/json')]
-    start_response(status, headers)
-    return [b'{"message": "CuraNet Basic WSGI is working!", "status": "success"}']
+import sys
+import os
 
-# Try to import FastAPI app if possible
+# Add the 'backend' directory to the Python path
+# This ensures that modules inside 'backend' can be imported correctly
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backend'))
+
 try:
-    import sys
-    import os
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, current_dir)
-    sys.path.insert(0, os.path.join(current_dir, 'backend'))
-    from backend.main import app
-    application = app
-except:
-    pass  # Use the basic WSGI app above
+    # Import the FastAPI app instance from backend.main
+    from main import app as application
+except ImportError as e:
+    # If the import fails, create a simple fallback app that shows the error
+    # This helps in debugging deployment issues
+    def application(environ, start_response):
+        status = '500 Internal Server Error'
+        headers = [('Content-Type', 'text/plain')]
+        message = f"Failed to import FastAPI app. Error: {e}".encode('utf-8')
+        start_response(status, headers)
+        return [message]
+
