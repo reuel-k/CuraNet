@@ -415,27 +415,3 @@ def get_patient_detail(patient_id: int, db: Session = Depends(get_db)):
     if not patient_data:
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient_data
-
-@app.put("/doctor/appointments/{appointment_id}", status_code=200)
-def update_appointment_details(
-    appointment_id: int,
-    appointment_data: schemas.AppointmentUpdate,
-    db: Session = Depends(get_db),
-):
-    """
-    Endpoint for doctors to update appointment details.
-    """
-    # Exclude unset fields from the update data
-    update_data_dict = appointment_data.dict(exclude_unset=True)
-
-    if not update_data_dict:
-        raise HTTPException(status_code=400, detail="No update data provided")
-
-    updated_appointment = doctor_appointments.update_appointment(
-        db, appointment_id, update_data_dict
-    )
-
-    if not updated_appointment:
-        raise HTTPException(status_code=404, detail="Appointment not found")
-
-    return {"message": "Appointment updated successfully"}

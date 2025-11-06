@@ -404,7 +404,6 @@
                   <th>Patient ID</th>
                   <th>Patient Name</th>
                   <th>Status</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="appointmentsTableBody">
@@ -414,40 +413,6 @@
           </div>
         </div>
       </main>
-    </div>
-
-    <!-- Modal for editing appointments -->
-    <div id="editModal" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Edit Appointment</h2>
-          <button class="close-modal" onclick="closeEditModal()">&times;</button>
-        </div>
-        <form id="editForm">
-          <input type="hidden" id="editAppointmentId" />
-          <div class="form-group">
-            <label for="editStatus">Status</label>
-            <select id="editStatus">
-              <option value="pending">Pending</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="editIssue">Patient Issue</label>
-            <textarea id="editIssue" rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="editPrescription">Prescription</label>
-            <textarea id="editPrescription" rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label for="editReport">Upload Report (Optional)</label>
-            <input type="file" id="editReport" />
-          </div>
-          <button type="submit" class="btn-primary">Save Changes</button>
-        </form>
-      </div>
     </div>
 
     <script>
@@ -512,16 +477,13 @@
                 <td><span class="status-badge status-${appointment.status.toLowerCase()}">${
                 appointment.status
               }</span></td>
-                <td>
-                  <button class="btn-primary" onclick="openEditModal('${appointment.appointment_id}')">Edit</button>
-                </td>
               `;
               tableBody.appendChild(row);
             });
           } else {
             tableBody.innerHTML = `
               <tr>
-                <td colspan="6" style="text-align: center;">No appointments found</td>
+                <td colspan="5" style="text-align: center;">No appointments found</td>
               </tr>
             `;
           }
@@ -542,60 +504,6 @@
           localStorage.setItem("theme", "dark");
         }
       }
-
-      function openEditModal(appointmentId) {
-        const modal = document.getElementById('editModal');
-        document.getElementById('editAppointmentId').value = appointmentId.replace('A', '');
-        // Fetch current appointment details if needed, or just open the modal
-        modal.style.display = 'flex';
-      }
-
-      function closeEditModal() {
-        const modal = document.getElementById('editModal');
-        modal.style.display = 'none';
-      }
-
-      document.getElementById('editForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const appointmentId = document.getElementById('editAppointmentId').value;
-        const status = document.getElementById('editStatus').value;
-        const issue = document.getElementById('editIssue').value;
-        const prescription = document.getElementById('editPrescription').value;
-        const reportFile = document.getElementById('editReport').files[0];
-
-        const updateData = {
-          status,
-          issue,
-          prescription,
-        };
-
-        // Handle file upload separately if needed, for now we'll just pass a placeholder URL
-        if (reportFile) {
-          // In a real app, you'd upload this to a service and get a URL
-          updateData.report_url = `reports/${reportFile.name}`;
-        }
-
-        try {
-          const response = await fetch(`/doctor/appointments/${appointmentId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updateData),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to update appointment');
-          }
-
-          alert('Appointment updated successfully');
-          closeEditModal();
-          loadAllAppointments(); // Refresh the list
-        } catch (error) {
-          console.error('Error updating appointment:', error);
-          alert('Failed to update appointment');
-        }
-      });
 
       // Initialize on page load
       document.addEventListener("DOMContentLoaded", () => {

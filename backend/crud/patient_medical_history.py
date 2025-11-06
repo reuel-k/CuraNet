@@ -31,10 +31,7 @@ def format_medical_history_response(patient: models.Patient, appointments: List[
                 "appointment_id": appointment.id,
                 "date_time": appointment.appointment_time.strftime("%Y-%m-%d %H:%M"),
                 "doctor": f"Dr. {appointment.doctor.name}",
-                "status": appointment.status,
-                "issue": appointment.issue,
-                "prescription": appointment.prescription,
-                "report_url": appointment.report_url,
+                "status": appointment.status
             }
             for appointment in appointments
         ]

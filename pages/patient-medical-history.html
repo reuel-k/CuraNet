@@ -399,9 +399,6 @@
                   <th>Date / Time</th>
                   <th>Doctor</th>
                   <th>Status</th>
-                  <th>Issue</th>
-                  <th>Prescription</th>
-                  <th>Report</th>
                 </tr>
               </thead>
               <tbody>
@@ -478,9 +475,6 @@
                   <td>${appointment.date_time}</td>
                   <td>${appointment.doctor}</td>
                   <td>${appointment.status}</td>
-                  <td>${appointment.issue || 'N/A'}</td>
-                  <td>${appointment.prescription || 'N/A'}</td>
-                  <td>${appointment.report_url ? `<a href="${appointment.report_url}" target="_blank">View Report</a>` : 'N/A'}</td>
                 `;
                 tableBody.appendChild(row);
               });
