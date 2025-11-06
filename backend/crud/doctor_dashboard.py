@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import asc
 from .. import models
 from typing import List
@@ -9,6 +9,7 @@ def get_doctor_appointments(db: Session, doctor_id: int, limit: int = 10) -> Lis
     Fetch pending appointments for a doctor in ascending order of date/time
     """
     return db.query(models.Appointment)\
+             .options(joinedload(models.Appointment.patient))\
              .filter(models.Appointment.doctor_id == doctor_id)\
              .filter(models.Appointment.status == "pending")\
              .order_by(asc(models.Appointment.appointment_time))\
