@@ -27,8 +27,10 @@ def get_patient_detail(db: Session, patient_id: int) -> Optional[Dict[Any, Any]]
                 "date": appointment.appointment_time.strftime("%Y-%m-%d") if appointment.appointment_time else "N/A",
                 "doctor": doctor.name,
                 "department": doctor.department,
-                "diagnosis": "General consultation",  # This would come from a diagnosis table in a real system
-                "status": appointment.status
+                "diagnosis": appointment.issue or "General consultation",
+                "status": appointment.status,
+                "prescription": appointment.prescription,
+                "report_url": appointment.report_url
             })
         
         # Create comprehensive patient data
@@ -47,15 +49,14 @@ def get_patient_detail(db: Session, patient_id: int) -> Optional[Dict[Any, Any]]
             "registration_date": "2023-01-15",  # Add this field to Patient model in future
             "visits": visit_history,
             "prescriptions": [
-                # Mock prescription data - in a real system, this would come from a prescriptions table
                 {
-                    "date": "2024-01-15",
-                    "medication": "Lisinopril 10mg",
-                    "dosage": "Once daily",
-                    "duration": "30 days",
-                    "prescribed_by": "Dr. Smith"
-                }
-            ] if visit_history else [],
+                    "date": v['date'],
+                    "medication": v['prescription'],
+                    "dosage": "As prescribed",
+                    "duration": "As prescribed",
+                    "prescribed_by": v['doctor']
+                } for v in visit_history if v['prescription']
+            ],
             "lab_reports": [
                 # Mock lab report data - in a real system, this would come from a lab_reports table
                 {
@@ -67,13 +68,13 @@ def get_patient_detail(db: Session, patient_id: int) -> Optional[Dict[Any, Any]]
                 }
             ] if visit_history else [],
             "documents": [
-                # Mock document data - in a real system, this would come from a documents table
                 {
-                    "id": "doc1",
-                    "name": "Blood Test Results",
-                    "date": "2024-01-15"
-                }
-            ] if visit_history else []
+                    "id": v['date'] + v['doctor'],
+                    "name": "Lab Report",
+                    "date": v['date'],
+                    "url": v['report_url']
+                } for v in visit_history if v['report_url']
+            ]
         }
         
         return patient_detail

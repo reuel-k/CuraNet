@@ -180,6 +180,9 @@ class AppointmentCreate(BaseModel):
 class AppointmentUpdate(BaseModel):
     appointment_time: Optional[str] = None
     status: Optional[str] = None
+    issue: Optional[str] = None
+    prescription: Optional[str] = None
+    report_url: Optional[str] = None
 
     class Config:
         from_attributes = True

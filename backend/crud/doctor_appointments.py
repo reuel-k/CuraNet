@@ -38,3 +38,17 @@ def format_appointments_response(appointments: List[models.Appointment]):
             for appointment in appointments
         ]
     }
+
+def update_appointment(db: Session, appointment_id: int, appointment_data: dict):
+    """
+    Update appointment details by a doctor.
+    """
+    db_appointment = db.query(models.Appointment).filter(models.Appointment.id == appointment_id).first()
+    if db_appointment:
+        # Update fields from the provided dictionary
+        for key, value in appointment_data.items():
+            if hasattr(db_appointment, key):
+                setattr(db_appointment, key, value)
+        db.commit()
+        db.refresh(db_appointment)
+    return db_appointment
